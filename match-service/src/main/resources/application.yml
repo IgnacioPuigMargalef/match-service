@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: match-service
+  # Datasource postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 5234
+
+# Configuracion del servidor embebido
+server:
+  port: 8084
+  servlet:
+    context-path: /match-service
+
