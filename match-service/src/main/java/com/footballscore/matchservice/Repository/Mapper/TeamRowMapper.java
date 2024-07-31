@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 @Component
 public class TeamRowMapper implements RowMapper<TeamEntity> {
+
     @Override
     public TeamEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
         return TeamEntity.builder()

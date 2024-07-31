@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import com.footballscore.matchservice.Exception.GettingMatchException;
 import com.footballscore.matchservice.Exception.NotFoundMatchException;
 import com.footballscore.matchservice.Repository.Entity.MatchEntity;
-import com.footballscore.matchservice.Repository.Mapper.MatchExtractor;
 import com.footballscore.matchservice.Repository.Mapper.MatchRowMapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
@@ -20,8 +19,7 @@ import java.util.List;
 @Repository
 @AllArgsConstructor
 public class MatchRepository {
-
-    private final MatchExtractor matchExtractor;
+    
     private final MatchRowMapper matchRowMapper;
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -47,7 +45,7 @@ public class MatchRepository {
         final MapSqlParameterSource params = new MapSqlParameterSource("date", day);
 
         try {
-            final List<MatchEntity> matches = jdbcTemplate.query(Queries.GET_MATCHES_BY_DATE, params, matchExtractor);
+            final List<MatchEntity> matches = jdbcTemplate.query(Queries.GET_MATCHES_BY_DATE, params, matchRowMapper);
 
             if(matches == null || matches.isEmpty()) {
                 LOGGER.warn("Not found matches on [{}]", day);
