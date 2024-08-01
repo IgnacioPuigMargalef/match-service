@@ -21,8 +21,8 @@ public class MatchRowMapper implements RowMapper<MatchEntity> {
         MatchEntity matchEntity = MatchEntity.builder()
                 .id(rs.getInt("id"))
                 .date(rs.getDate("date").toLocalDate())
-                .time(rs.getTime("time").toLocalTime())
-                .status(rs.getObject("status", MatchStatus.class))
+                .time(rs.getTime("hour").toLocalTime())
+                .status(MatchStatus.valueOf(rs.getString("status")))
                 .build();
         setNestedObjects(rs, matchEntity);
         return matchEntity;
@@ -30,23 +30,23 @@ public class MatchRowMapper implements RowMapper<MatchEntity> {
 
     private void setNestedObjects(ResultSet rs, MatchEntity match) throws SQLException {
         final TeamEntity localTeam = TeamEntity.builder()
-                .id(rs.getInt("t1.id"))
-                .name(rs.getString("t1.name"))
-                .city(rs.getString("t1.city"))
-                .emblem(rs.getBytes("t1.emblem"))
-                .stadium(rs.getString("t1.stadium"))
+                .id(rs.getInt("local_id"))
+                .name(rs.getString("local_name"))
+                .city(rs.getString("local_city"))
+                .emblem(rs.getBytes("local_emblem"))
+                .stadium(rs.getString("local_stadium"))
                 .build();
 
         final TeamEntity visitorTeam = TeamEntity.builder()
-                .id(rs.getInt("t2.id"))
-                .name(rs.getString("t2.name"))
-                .city(rs.getString("t2.city"))
-                .emblem(rs.getBytes("t2.emblem"))
-                .stadium(rs.getString("t2.stadium"))
+                .id(rs.getInt("visitor_id"))
+                .name(rs.getString("visitor_name"))
+                .city(rs.getString("visitor_city"))
+                .emblem(rs.getBytes("visitor_emblem"))
+                .stadium(rs.getString("visitor_stadium"))
                 .build();
 
         match.setScore(scorerRowMapper.mapRow(rs, 1));
         match.setLocal_team(localTeam);
-        match.setLocal_team(visitorTeam);
+        match.setVisitor_team(visitorTeam);
     }
 }

@@ -14,7 +14,7 @@ public class MatchEntity {
     private LocalDate date;
     private LocalTime time;
     private TeamEntity local_team;
-    private TeamEntity vissitor_team;
+    private TeamEntity visitor_team;
     private MatchStatus status;
     private ScorerEntity score;
 }

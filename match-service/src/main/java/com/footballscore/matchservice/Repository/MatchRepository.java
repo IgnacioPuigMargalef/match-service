@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 @AllArgsConstructor
 public class MatchRepository {
-    
+
     private final MatchRowMapper matchRowMapper;
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -42,12 +42,12 @@ public class MatchRepository {
 
     public List<MatchEntity> getByDay(LocalDate day) {
         LOGGER.info("MatchRepository - begin getByDay with day [{}]", day);
-        final MapSqlParameterSource params = new MapSqlParameterSource("date", day);
+        final MapSqlParameterSource params = new MapSqlParameterSource("match_date", day);
 
         try {
             final List<MatchEntity> matches = jdbcTemplate.query(Queries.GET_MATCHES_BY_DATE, params, matchRowMapper);
 
-            if(matches == null || matches.isEmpty()) {
+            if(matches.isEmpty()) {
                 LOGGER.warn("Not found matches on [{}]", day);
                 throw new NotFoundMatchException();
             }
