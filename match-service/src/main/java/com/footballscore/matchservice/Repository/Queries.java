@@ -21,4 +21,8 @@ public class Queries {
             "   join scorer s on m.id = s.match_id\n" +
             "where m.date = TO_DATE('31/07/2024', 'DD/MM/YYYY')\n" +
             "order by m.date desc\n";
+
+    public static final String CREATE_MATCH = "" +
+            "INSERT INTO match (date, local_team_id, visitor_team_id, hour, status)\n" +
+            "VALUES(TO_DATE( :day, 'dd/MM/yyyy'), :local_team, :visitor_team, :hour, 'NOT_STARTED')";
 }

@@ -1,6 +1,8 @@
 package com.footballscore.matchservice.Repository;
 
 import ch.qos.logback.classic.Logger;
+import com.footballscore.matchservice.Controller.Request.NewMatchRequest;
+import com.footballscore.matchservice.Exception.CreatingMatchException;
 import com.footballscore.matchservice.Exception.GettingMatchException;
 import com.footballscore.matchservice.Exception.NotFoundMatchException;
 import com.footballscore.matchservice.Repository.Entity.MatchEntity;
@@ -56,6 +58,22 @@ public class MatchRepository {
         } catch (DataAccessException e) {
             LOGGER.error("Error in getByDay(day = [{}]) method", day, e);
             throw new GettingMatchException();
+        }
+    }
+
+    public void createMatch(NewMatchRequest match) {
+        LOGGER.info("MatchRepository - begin createMatch creating match [{}]", match);
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+        params
+                .addValue("day", match.day())
+                .addValue("hour", match.hour())
+                .addValue("local_team", match.local_team())
+                .addValue("visitor_team", match.visitor_team());
+        try {
+            jdbcTemplate.update(Queries.CREATE_MATCH, params);
+        } catch (DataAccessException e) {
+            LOGGER.error("Error in createMatch() method", e);
+            throw new CreatingMatchException();
         }
     }
 
