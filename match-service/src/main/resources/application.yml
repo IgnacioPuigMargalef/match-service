@@ -13,3 +13,8 @@ server:
   servlet:
     context-path: /match-service
 
+# Jedis config
+jedis:
+  host: localhost
+  port: 6379
+
