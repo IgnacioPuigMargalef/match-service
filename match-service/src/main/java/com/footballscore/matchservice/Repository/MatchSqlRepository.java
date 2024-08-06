@@ -7,12 +7,16 @@ import com.footballscore.matchservice.Exception.GettingMatchException;
 import com.footballscore.matchservice.Exception.NotFoundMatchException;
 import com.footballscore.matchservice.Repository.Entity.MatchEntity;
 import com.footballscore.matchservice.Repository.Mapper.MatchRowMapper;
+import com.footballscore.matchservice.Utils.QueryUtil;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -20,16 +24,17 @@ import java.util.List;
 
 @Repository
 @AllArgsConstructor
-public class MatchRepository {
+public class MatchSqlRepository {
 
     private final MatchRowMapper matchRowMapper;
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbc;
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MatchRepository.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(MatchSqlRepository.class);
 
     public MatchEntity getById(Integer matchId) {
         LOGGER.info("MatchRepository - begin getById with match id [{}]", matchId);
-        final MapSqlParameterSource params = new MapSqlParameterSource("matchId", matchId);
+        final MapSqlParameterSource params = new MapSqlParameterSource("match_id", matchId);
 
         try {
             return jdbcTemplate.queryForObject(Queries.GET_MATCH_BY_ID, params, matchRowMapper);
@@ -49,7 +54,7 @@ public class MatchRepository {
         try {
             final List<MatchEntity> matches = jdbcTemplate.query(Queries.GET_MATCHES_BY_DATE, params, matchRowMapper);
 
-            if(matches.isEmpty()) {
+            if (matches.isEmpty()) {
                 LOGGER.warn("Not found matches on [{}]", day);
                 throw new NotFoundMatchException();
             }
@@ -61,17 +66,15 @@ public class MatchRepository {
         }
     }
 
-    public void createMatch(NewMatchRequest match) {
+    public Integer createMatch(NewMatchRequest match) {
         LOGGER.info("MatchRepository - begin createMatch creating match [{}]", match);
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params
-                .addValue("day", match.day())
-                .addValue("hour", match.hour())
-                .addValue("local_team", match.local_team())
-                .addValue("visitor_team", match.visitor_team());
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+
         try {
-            jdbcTemplate.update(Queries.CREATE_MATCH, params);
-        } catch (DataAccessException e) {
+             jdbc.update(connection -> QueryUtil.getInsertMatchSqlStatement(connection, match), keyHolder);
+             Long longKey = (Long)keyHolder.getKeyList().getFirst().get("id");
+             return longKey.intValue();
+        } catch (Exception e) {
             LOGGER.error("Error in createMatch() method", e);
             throw new CreatingMatchException();
         }
