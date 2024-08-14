@@ -1,7 +1,9 @@
 package com.footballscore.matchservice.Controller;
 
 import com.footballscore.matchservice.Controller.Request.NewMatchRequest;
+import com.footballscore.matchservice.Dto.CachedMatch;
 import com.footballscore.matchservice.Repository.Entity.MatchEntity;
+import com.footballscore.matchservice.Repository.MatchRedisRepository;
 import com.footballscore.matchservice.Repository.MatchSqlRepository;
 import com.footballscore.matchservice.Service.MatchService;
 import lombok.AllArgsConstructor;
@@ -32,6 +34,11 @@ public class MatchController {
     @PostMapping("/createMatch")
     public void createMatch(@RequestBody NewMatchRequest match) {
         matchService.createMatch(match);
+    }
+
+    @GetMapping("/test")
+    public List<CachedMatch> createMatch() {
+        return matchService.getMatchesFromToday();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.footballscore.matchservice.Dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Builder

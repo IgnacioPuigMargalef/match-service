@@ -6,10 +6,14 @@ import com.footballscore.matchservice.Dto.CachedMatch;
 import com.footballscore.matchservice.Repository.Entity.MatchEntity;
 import com.footballscore.matchservice.Repository.MatchRedisRepository;
 import com.footballscore.matchservice.Repository.MatchSqlRepository;
+import com.footballscore.matchservice.Utils.Utils;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -28,6 +32,16 @@ public class MatchService {
         MatchEntity matchEntity = matchSqlRepository.getById(matchId);
         CachedMatch cachedMatch = mapMatchEntityToCachedMatch(matchEntity);
         matchRedisRepository.createMatch(cachedMatch);
+    }
+
+    public List<CachedMatch> getMatchesFromToday() {
+        LOGGER.info("MatchService - Getting matches from today");
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        return matchRedisRepository.findMatchesByDate(
+                Utils.replaceDashForSpace(today.toString()),
+                Utils.replaceDashForSpace(yesterday.toString())
+        );
     }
 
     private CachedMatch mapMatchEntityToCachedMatch(MatchEntity match) {
